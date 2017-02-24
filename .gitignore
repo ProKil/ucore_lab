@@ -1,6 +1,7 @@
 *~
 obj/
 bin/
+.metadata
 .gdb.in
 .qemu.out
 cscope.*
