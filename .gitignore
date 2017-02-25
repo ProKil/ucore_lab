@@ -2,6 +2,7 @@
 obj/
 bin/
 .metadata
+.settings
 .gdb.in
 .qemu.out
 cscope.*
