@@ -347,7 +347,7 @@ pmm_init(void) {
 // return vaule: the kernel virtual address of this pte
 pte_t *
 get_pte(pde_t *pgdir, uintptr_t la, bool create) {
-    /* LAB2 EXERCISE 2: YOUR CODE
+    /* LAB2 EXERCISE 2: 2014011357
      *
      * If you need to visit a physical address, please use KADDR()
      * please read pmm.h for useful macros
@@ -380,6 +380,18 @@ get_pte(pde_t *pgdir, uintptr_t la, bool create) {
     }
     return NULL;          // (8) return page table entry
 #endif
+
+    pde_t *pdep = &pgdir[PDX(la)];          // (1)
+    if (!(*pdep & PTE_P)) {                 // (2)
+        if (!create) return NULL;           // (3)
+        struct Page *p = alloc_page();
+        if (p == NULL) return NULL;
+        set_page_ref(p, 1);                 // (4)
+        uintptr_t pa = page2pa(p);          // (5)
+        memset(KADDR(pa), 0, PGSIZE);       // (6)
+        *pdep = pa | PTE_U | PTE_W | PTE_P; // (7)
+    }
+    return &((pte_t *)KADDR(PDE_ADDR(*pdep)))[PTX(la)]; // (8)
 }
 
 //get_page - get related Page struct for linear address la using PDT pgdir
@@ -389,7 +401,7 @@ get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store) {
     if (ptep_store != NULL) {
         *ptep_store = ptep;
     }
-    if (ptep != NULL && *ptep & PTE_P) {
+    if (ptep != NULL && (*ptep & PTE_P)) {
         return pte2page(*ptep);
     }
     return NULL;
