@@ -19,7 +19,7 @@
  * (1) Prepare: In order to implement FIFO PRA, we should manage all swappable pages, so we can
  *              link these pages into pra_list_head according the time order. At first you should
  *              be familiar to the struct list in list.h. struct list is a simple doubly linked list
- *              implementation. You should know howto USE: list_init, list_add(list_add_after),
+ *              implementation. You should know how to USE: list_init, list_add(list_add_after),
  *              list_add_before, list_del, list_next, list_prev. Another tricky method is to transform
  *              a general list struct to a special struct (such as struct page). You can find some MACRO:
  *              le2page (in memlayout.h), (in future labs: le2vma (in vmm.h), le2proc (in proc.h),etc.

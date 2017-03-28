@@ -157,6 +157,7 @@ pgfault_handler(struct trapframe *tf) {
         return do_pgfault(check_mm_struct, tf->tf_err, rcr2());
     }
     panic("unhandled page fault.\n");
+    return 0;
 }
 
 static volatile int in_swap_tick_event = 0;
