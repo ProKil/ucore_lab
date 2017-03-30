@@ -196,8 +196,17 @@ $(call create_target,ucore.img)
 # create swap.img
 SWAPIMG		:= $(call totarget,swap.img)
 
+
+UNAME 		:= $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+	BS=1m
+else
+	BS=1M
+endif
+
 $(SWAPIMG):
-	$(V)dd if=/dev/zero of=$@ bs=1M count=128
+	$(V)dd if=/dev/zero of=$@ bs=$(BS) count=128
 
 $(call create_target,swap.img)
 
