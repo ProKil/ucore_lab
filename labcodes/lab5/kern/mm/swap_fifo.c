@@ -19,7 +19,7 @@
  * (1) Prepare: In order to implement FIFO PRA, we should manage all swappable pages, so we can
  *              link these pages into pra_list_head according the time order. At first you should
  *              be familiar to the struct list in list.h. struct list is a simple doubly linked list
- *              implementation. You should know howto USE: list_init, list_add(list_add_after),
+ *              implementation. You should know how to USE: list_init, list_add(list_add_after),
  *              list_add_before, list_del, list_next, list_prev. Another tricky method is to transform
  *              a general list struct to a special struct (such as struct page). You can find some MACRO:
  *              le2page (in memlayout.h), (in future labs: le2vma (in vmm.h), le2proc (in proc.h),etc.
@@ -49,12 +49,13 @@ _fifo_map_swappable(struct mm_struct *mm, uintptr_t addr, struct Page *page, int
  
     assert(entry != NULL && head != NULL);
     //record the page access situlation
-    /*LAB3 EXERCISE 2: YOUR CODE*/ 
+    /*LAB3 EXERCISE 2: 2014011357*/
     //(1)link the most recent arrival page at the back of the pra_list_head qeueue.
+    list_add_before(head, entry);
     return 0;
 }
 /*
- *  (4)_fifo_swap_out_victim: According FIFO PRA, we should unlink the  earliest arrival page in front of pra_list_head qeueue,
+ *  (4)_fifo_swap_out_victim: According FIFO PRA, we should unlink the earliest arrival page in front of pra_list_head queue,
  *                            then set the addr of addr of this page to ptr_page.
  */
 static int
@@ -64,9 +65,13 @@ _fifo_swap_out_victim(struct mm_struct *mm, struct Page ** ptr_page, int in_tick
          assert(head != NULL);
      assert(in_tick==0);
      /* Select the victim */
-     /*LAB3 EXERCISE 2: YOUR CODE*/ 
+     /*LAB3 EXERCISE 2: 2014011357*/
      //(1)  unlink the  earliest arrival page in front of pra_list_head qeueue
      //(2)  set the addr of addr of this page to ptr_page
+     list_entry_t *le = head->next;
+     struct Page *p = le2page(le, pra_page_link);
+     list_del(le);
+     *ptr_page = p;
      return 0;
 }
 
