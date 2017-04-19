@@ -120,9 +120,9 @@ alloc_proc(void) {
      * below fields(add in LAB5) in proc_struct need to be initialized	
      *       uint32_t wait_state;                        // waiting state
      *       struct proc_struct *cptr, *yptr, *optr;     // relations between processes
-	 */
-		proc->wait_state = 0;
-		proc->cptr = proc->yptr = proc->optr = NULL;
+     */
+        proc->wait_state = 0;
+        proc->cptr = proc->yptr = proc->optr = NULL;
     }
     return proc;
 }
@@ -435,9 +435,9 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     local_intr_save(intr_flag);
     {
         proc->pid = get_pid();              // 5, answer
-        nr_process++;
+        //nr_process++;                     // grade
         hash_proc(proc);
-        list_add(&proc_list, &(proc->list_link));
+        //list_add(&proc_list, &(proc->list_link)); //grade
         set_links(proc);
 
     }

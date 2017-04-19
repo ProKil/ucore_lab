@@ -22,7 +22,7 @@ static void print_ticks() {
     cprintf("%d ticks\n",TICK_NUM);
 #ifdef DEBUG_GRADE
     cprintf("End of Test.\n");
-    panic("EOT: kernel seems ok.");
+    //panic("EOT: kernel seems ok.");
 #endif
 }
 
@@ -53,11 +53,11 @@ idt_init(void) {
       *     You don't know the meaning of this instruction? just google it! and check the libs/x86.h to know more.
       *     Notice: the argument of lidt is idt_pd. try to find it!
       */
-	extern uintptr_t __vectors[];
+    extern uintptr_t __vectors[];
 
-	for(int i = 0; i < 256; ++i) {
-		SETGATE(idt[i], 0, GD_KTEXT, __vectors[i], DPL_KERNEL);
-	}
+    for(int i = 0; i < 256; ++i) {
+        SETGATE(idt[i], 0, GD_KTEXT, __vectors[i], DPL_KERNEL);
+    }
 
 	// set for switch from user to kernel
     SETGATE(idt[T_SWITCH_TOK], 0, GD_KTEXT, __vectors[T_SWITCH_TOK], DPL_USER);
@@ -67,7 +67,7 @@ idt_init(void) {
     //so you should setup the syscall interrupt gate in here
     SETGATE(idt[T_SYSCALL], 1, GD_KTEXT, __vectors[T_SYSCALL], DPL_USER);
 
-	lidt(&idt_pd);
+    lidt(&idt_pd);
 }
 
 static const char *

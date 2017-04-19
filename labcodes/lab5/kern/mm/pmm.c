@@ -529,7 +529,7 @@ copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end, bool share) {
         assert(page!=NULL);
         assert(npage!=NULL);
         int ret=0;
-        /* LAB5:EXERCISE2 YOUR CODE
+        /* LAB5:EXERCISE2 2014011357
          * replicate content of page to npage, build the map of phy addr of nage with the linear addr start
          *
          * Some Useful MACROs and DEFINEs, you can use them in below implementation.
@@ -541,8 +541,12 @@ copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end, bool share) {
          * (1) find src_kvaddr: the kernel virtual address of page
          * (2) find dst_kvaddr: the kernel virtual address of npage
          * (3) memory copy from src_kvaddr to dst_kvaddr, size is PGSIZE
-         * (4) build the map of phy addr of  nage with the linear addr start
+         * (4) build the map of phy addr of npage with the linear addr start
          */
+        void *src_kvaddr = page2kva(page);              // 1
+        void *dst_kvaddr = page2kva(npage);             // 2
+        memcpy(dst_kvaddr, src_kvaddr, PGSIZE);         // 3
+        ret = page_insert(to, npage, start, perm);      // 4
         assert(ret == 0);
         }
         start += PGSIZE;
