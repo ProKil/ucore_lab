@@ -115,12 +115,14 @@ alloc_proc(void) {
         proc->cr3 = boot_cr3;
         proc->flags = 0;
         memset(proc->name, 0, PROC_NAME_LEN);                   // answer
-     //LAB5 YOUR CODE : (update LAB4 steps)
+     //LAB5 2014011357 : (update LAB4 steps)
     /*
      * below fields(add in LAB5) in proc_struct need to be initialized	
      *       uint32_t wait_state;                        // waiting state
      *       struct proc_struct *cptr, *yptr, *optr;     // relations between processes
 	 */
+		proc->wait_state = 0;
+		proc->cptr = proc->yptr = proc->optr = NULL;
     }
     return proc;
 }
@@ -408,10 +410,19 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     //    6. call wakeup_proc to make the new child process RUNNABLE
     //    7. set ret vaule using child proc's pid
 
+    //LAB5 2014011357 : (update LAB4 steps)
+   /* Some Functions
+    *    set_links:  set the relation links of process.  ALSO SEE: remove_links:  lean the relation links of process
+    *    -------------------
+    *    update step 1: set child proc's parent to current process, make sure current process's wait_state is 0
+    *    update step 5: insert proc_struct into hash_list && proc_list, set the relation links of process
+    */
+
     if ((proc = alloc_proc()) == NULL) {    // 1
         goto fork_out;
     }
     proc->parent = current;                 // answer
+    assert(current->wait_state == 0);       // LAB5
     if (setup_kstack(proc) != 0) {          // 2
         goto bad_fork_cleanup_proc;
     }
@@ -427,19 +438,13 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
         nr_process++;
         hash_proc(proc);
         list_add(&proc_list, &(proc->list_link));
+        set_links(proc);
 
     }
     local_intr_restore(intr_flag);
 
     wakeup_proc(proc);                      // 6
     ret = proc->pid;                        // 7
-	//LAB5 YOUR CODE : (update LAB4 steps)
-   /* Some Functions
-    *    set_links:  set the relation links of process.  ALSO SEE: remove_links:  lean the relation links of process 
-    *    -------------------
-	*    update step 1: set child proc's parent to current process, make sure current process's wait_state is 0
-	*    update step 5: insert proc_struct into hash_list && proc_list, set the relation links of process
-    */
 	
 fork_out:
     return ret;

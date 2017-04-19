@@ -62,10 +62,12 @@ idt_init(void) {
 	// set for switch from user to kernel
     SETGATE(idt[T_SWITCH_TOK], 0, GD_KTEXT, __vectors[T_SWITCH_TOK], DPL_USER);
 
+    /* LAB5 2014011357 */
+    //you should update your lab1 code (just add ONE or TWO lines of code), let user app to use syscall to get the service of ucore
+    //so you should setup the syscall interrupt gate in here
+    SETGATE(idt[T_SYSCALL], 1, GD_KTEXT, __vectors[T_SYSCALL], DPL_USER);
+
 	lidt(&idt_pd);
-     /* LAB5 YOUR CODE */ 
-     //you should update your lab1 code (just add ONE or TWO lines of code), let user app to use syscall to get the service of ucore
-     //so you should setup the syscall interrupt gate in here
 }
 
 static const char *
@@ -229,15 +231,16 @@ trap_dispatch(struct trapframe *tf) {
          * (2) Every TICK_NUM cycle, you can print some info using a funciton, such as print_ticks().
          * (3) Too Simple? Yes, I think so!
          */
-        ticks++;
-        if (ticks % TICK_NUM == 0) {
-            print_ticks();
-        }
-        /* LAB5 YOUR CODE */
+        /* LAB5 2014011357 */
         /* you should upate you lab1 code (just add ONE or TWO lines of code):
          *    Every TICK_NUM cycle, you should set current process's current->need_resched = 1
          */
-  
+        ticks++;
+        if (ticks % TICK_NUM == 0) {
+            print_ticks();
+            current->need_resched = 1;
+        }
+
         break;
     case IRQ_OFFSET + IRQ_COM1:
         c = cons_getc();
