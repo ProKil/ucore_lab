@@ -42,12 +42,7 @@ sched_class_proc_tick(struct proc_struct *proc) {
 
 void
 my_sched_class_proc_tick(struct proc_struct *proc) {
-    if (proc != idleproc) {
-        sched_class->proc_tick(rq, proc);
-    }
-    else {
-        proc->need_resched = 1;
-    }
+    sched_class_proc_tick(proc);
 }
 
 static struct run_queue __rq;
