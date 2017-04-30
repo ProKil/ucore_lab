@@ -243,9 +243,9 @@ trap_dispatch(struct trapframe *tf) {
          */
         ticks++;
         my_sched_class_proc_tick(current);
-        if (ticks % TICK_NUM == 0) {
-            print_ticks();
-        }
+//        if (ticks % TICK_NUM == 0) {
+//            print_ticks();
+//        }
         break;
     case IRQ_OFFSET + IRQ_COM1:
         c = cons_getc();
