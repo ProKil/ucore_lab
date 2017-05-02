@@ -9,7 +9,7 @@ main(void) {
     if (pid== 0) {
         cprintf("I am the child. spinning ...\n");
         while (1);
-    }else if (pid<0) {
+    } else if (pid<0) {
         panic("fork child error\n");
     }
     cprintf("I am the parent. Running the child...\n");
@@ -17,7 +17,7 @@ main(void) {
     yield();
     yield();
     yield();
-    
+
     cprintf("I am the parent.  Killing the child...\n");
 
     assert((ret = kill(pid)) == 0);
