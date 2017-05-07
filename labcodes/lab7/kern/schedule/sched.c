@@ -40,11 +40,6 @@ sched_class_proc_tick(struct proc_struct *proc) {
     }
 }
 
-void
-my_sched_class_proc_tick(struct proc_struct *proc) {
-    sched_class_proc_tick(proc);
-}
-
 static struct run_queue __rq;
 
 void
