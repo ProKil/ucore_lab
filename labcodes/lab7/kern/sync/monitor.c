@@ -37,7 +37,7 @@ cond_signal (condvar_t *cvp) {
    *          }
    *       }
    */
-   if(cvp->count>0) {
+   if(cvp->count > 0) {
        cvp->owner->next_count ++;
        up(&(cvp->sem));
        down(&(cvp->owner->next));
