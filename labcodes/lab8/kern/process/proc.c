@@ -734,6 +734,7 @@ load_icode(int fd, int argc, char **kargv) {
             start += size;
         }
     }
+    sysfile_close(fd);  // answer
 
     // (4) call mm_map to setup user stack, and put parameters into user stack
     vm_flags = VM_READ | VM_WRITE | VM_STACK;
@@ -765,6 +766,9 @@ load_icode(int fd, int argc, char **kargv) {
         uargv[i] = strcpy((char *)(stacktop + argv_size), kargv[i]);
         argv_size += strnlen(kargv[i], EXEC_MAX_ARG_LEN + 1) + 1;
     }
+
+    stacktop = (uintptr_t)uargv - sizeof(int);
+    *(int *)stacktop = argc;
 
     // (7) setup trapframe for user environment
     struct trapframe *tf = current->tf;
