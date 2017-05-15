@@ -449,7 +449,7 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     }
     ret = -E_NO_MEM;
     //LAB4:EXERCISE2 2014011357
-    //LAB8:EXERCISE2 YOUR CODE  HINT:how to copy the fs in parent's proc_struct?
+    //LAB8:EXERCISE2 2014011357  HINT:how to copy the fs in parent's proc_struct?
     /*
      * Some Useful MACROs, Functions and DEFINEs, you can use them in below implementation.
      * MACROs or Functions:
@@ -491,8 +491,11 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     if (setup_kstack(proc) != 0) {          // 2
         goto bad_fork_cleanup_proc;
     }
-    if (copy_mm(clone_flags, proc) != 0) {  // 3
+    if (copy_files(clone_flags, proc) != 0) {  // LAB8
         goto bad_fork_cleanup_kstack;
+    }
+    if (copy_mm(clone_flags, proc) != 0) {  // 3
+        goto bad_fork_cleanup_fs;
     }
     copy_thread(proc, stack, tf);           // 4
 
@@ -651,12 +654,12 @@ load_icode(int fd, int argc, char **kargv) {
         goto bad_elf_cleanup_pgdir;
     }
 
-    uint32_t vm_flags, perm;
+    uint32_t vm_flags, perm, phnum;
     struct proghdr __ph, *ph = &__ph;
-    for (int phnum = 0; phnum < elf->e_phnum; ++phnum) {
+    for (phnum = 0; phnum < elf->e_phnum; ++phnum) {
         //(3.2) read raw data content in file and resolve proghdr based on info in elfhdr
         off_t phoff = elf->e_phoff + sizeof(struct proghdr) * phnum;
-        if ((ret = load_icode_read(fd, ph, sizeof(struct elfhdr), phoff)) != 0) {
+        if ((ret = load_icode_read(fd, ph, sizeof(struct proghdr), phoff)) != 0) {
             goto bad_cleanup_mmap;
         }
         if (ph->p_type != ELF_PT_LOAD) {
@@ -720,6 +723,7 @@ load_icode(int fd, int argc, char **kargv) {
         }
         while (start < end) {
             if ((page = pgdir_alloc_page(mm->pgdir, la, perm)) == NULL) {
+                ret = -E_NO_MEM;
                 goto bad_cleanup_mmap;
             }
             off = start - la, size = PGSIZE - off, la += PGSIZE;
@@ -776,7 +780,7 @@ load_icode(int fd, int argc, char **kargv) {
      */
     tf->tf_cs = USER_CS;
     tf->tf_ds = tf->tf_es = tf->tf_ss = USER_DS;
-    tf->tf_esp = USTACKTOP;
+    tf->tf_esp = stacktop;
     tf->tf_eip = elf->e_entry;
     tf->tf_eflags = FL_IF;
 
